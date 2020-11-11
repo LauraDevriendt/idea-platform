@@ -28,6 +28,4 @@ public class Address {
 
     @ManyToMany(mappedBy = "addresses")
     private Set<Customer> customers;
-
-
 }

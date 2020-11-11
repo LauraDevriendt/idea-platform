@@ -29,7 +29,6 @@ class Customer {
     )
     private Set<Address> addresses;
 
-
     @OneToMany(mappedBy = "customer")
     private Set<Sale> sales;
 }

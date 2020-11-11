@@ -29,5 +29,4 @@ class SaleLine {
 
     @Column(name = "QUANTITY")
     private Integer quantity;
-
 }

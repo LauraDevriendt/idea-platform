@@ -24,5 +24,4 @@ class Product {
 
     @ManyToMany(mappedBy = "products")
     private Set<SaleLine> salesLines;
-
 }
