@@ -1,13 +1,18 @@
 package com.coaching.salesplatform.customer;
 
+import com.fasterxml.jackson.annotation.*;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "addresses")
 @Data
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property  = "id",
+        scope     = Long.class)
 public class Address {
 
     @Id
@@ -27,5 +32,5 @@ public class Address {
     private String zipcode;
 
     @ManyToMany(mappedBy = "addresses")
-    private Set<Customer> customers;
+    private List<Customer> customers;
 }
