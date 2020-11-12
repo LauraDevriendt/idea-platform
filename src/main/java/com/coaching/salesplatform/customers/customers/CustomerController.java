@@ -1,5 +1,7 @@
-package com.coaching.salesplatform.customer;
+package com.coaching.salesplatform.customers.customers;
 
+import com.coaching.salesplatform.customers.address.Address;
+import com.coaching.salesplatform.customers.address.AddressService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +49,7 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer, @PathVariable Long id) {
-        List<Address> addresses = new ArrayList<>();
+       List<Address> addresses = new ArrayList<>();
         for (Address address : customer.getAddresses()) {
             Address addressDatabase = addressService.addAddress(address);
             addresses.add(addressDatabase);
@@ -58,7 +60,7 @@ public class CustomerController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCustomer(@PathVariable Long id) {
-        repository.deleteById(id);
+        service.deleteCustomer(id);
         return new ResponseEntity<>("Customer with id " + id + " is deleted", HttpStatus.OK);
     }
 }

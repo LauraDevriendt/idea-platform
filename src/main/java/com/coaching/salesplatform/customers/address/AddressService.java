@@ -1,9 +1,8 @@
-package com.coaching.salesplatform.customer;
+package com.coaching.salesplatform.customers.address;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.coaching.salesplatform.errors.NotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,5 +19,23 @@ public class AddressService {
             return repository.saveAndFlush(address);
         }
         return foundAddress.get();
+    }
+
+    public Address getAddress(Long id) {
+        Optional<Address> address = repository.findById(id);
+        if (address.isEmpty()) {
+            throw new NotFoundException("address not found");
+        }
+        return address.get();
+    }
+
+    public Address updateAddress(Address address, Long id) {
+        getAddress(id);
+        address.setId(id);
+        return repository.save(address);
+    }
+
+    public void removeAddress(Address address) {
+        repository.delete(address);
     }
 }

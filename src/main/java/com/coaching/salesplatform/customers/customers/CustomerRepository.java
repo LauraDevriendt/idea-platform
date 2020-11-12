@@ -1,4 +1,4 @@
-package com.coaching.salesplatform.customer;
+package com.coaching.salesplatform.customers.customers;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

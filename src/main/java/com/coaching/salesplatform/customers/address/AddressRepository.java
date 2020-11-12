@@ -1,10 +1,8 @@
-package com.coaching.salesplatform.customer;
+package com.coaching.salesplatform.customers.address;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
