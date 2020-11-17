@@ -34,11 +34,7 @@ class Customer {
     private String lastName;
 
     // BIDIRECTIONAL RELATIONSHIP => CHECK IDENTITY INFO TO AVOID STACKOVERFLOW AND USE Lists instead of sets
-    @ManyToMany (cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "customer_address",
-            joinColumns = @JoinColumn(name = "customer_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id", referencedColumnName = "id")
-    )
+    @ManyToMany (cascade = {CascadeType.ALL})
     @JsonIgnoreProperties("customers")
     private List<Address> addresses;
 

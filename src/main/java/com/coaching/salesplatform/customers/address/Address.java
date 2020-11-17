@@ -37,7 +37,7 @@ public class Address {
     @NotBlank
     private String zipcode;
 
-    @ManyToMany(mappedBy = "addresses", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "addresses", cascade = {CascadeType.ALL})
     @JsonIgnoreProperties("addresses")
     private List<Customer> customers;
 

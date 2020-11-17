@@ -32,6 +32,7 @@ public class SaleController {
 
     @PostMapping
     public ResponseEntity<Sale> createSale(@Valid @RequestBody final Sale sale) {
+        sale.getSaleLines().stream().forEach(saleLine -> saleLine.setSale(sale));
         Sale sale1 = repository.save(sale);
         return new ResponseEntity<>( sale1, HttpStatus.OK);
     }

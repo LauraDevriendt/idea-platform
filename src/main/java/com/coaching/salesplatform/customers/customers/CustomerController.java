@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/customers")
@@ -37,10 +38,13 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<Customer> createCustomer(@Valid @RequestBody final Customer customer) {
-        List<Address> addresses = new ArrayList<>();
+      List<Address> addresses = new ArrayList<>();
         for (Address address : customer.getAddresses()) {
-            Address addressDatabase = addressService.addAddress(address);
-            addresses.add(addressDatabase);
+            Optional<Address> addressDatabase = addressService.findAddress(address);
+            addressDatabase.ifPresentOrElse(
+                    addresses::add,
+                    () -> addresses.add(address)
+            );
         }
         customer.setAddresses(addresses);
 
@@ -49,10 +53,13 @@ public class CustomerController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(@RequestBody Customer customer, @PathVariable Long id) {
-       List<Address> addresses = new ArrayList<>();
+        List<Address> addresses = new ArrayList<>();
         for (Address address : customer.getAddresses()) {
-            Address addressDatabase = addressService.addAddress(address);
-            addresses.add(addressDatabase);
+            Optional<Address> addressDatabase = addressService.findAddress(address);
+            addressDatabase.ifPresentOrElse(
+                    addresses::add,
+                    () -> addresses.add(address)
+            );
         }
         customer.setAddresses(addresses);
         return new ResponseEntity<>(service.updateCustomer(customer, id), HttpStatus.OK);

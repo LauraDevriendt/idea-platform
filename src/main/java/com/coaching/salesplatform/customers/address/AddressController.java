@@ -1,9 +1,12 @@
 package com.coaching.salesplatform.customers.address;
 
+import com.coaching.salesplatform.customers.customers.Customer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -39,5 +42,11 @@ public class AddressController {
     public ResponseEntity<String> deleteAddress(@PathVariable Long id) {
         repository.deleteById(id);
         return new ResponseEntity<>("Address with id " + id + " is deleted", HttpStatus.OK);
+    }
+
+    @PostMapping
+    public ResponseEntity<Address> createAddress(@Valid @RequestBody final Address address) {
+
+        return new ResponseEntity<>(repository.save(address), HttpStatus.OK);
     }
 }

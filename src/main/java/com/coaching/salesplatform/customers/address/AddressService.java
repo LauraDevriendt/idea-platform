@@ -13,12 +13,8 @@ public class AddressService {
         this.repository = repository;
     }
 
-    public Address addAddress(Address address) {
-        Optional<Address> foundAddress = repository.findByStreetNameAndNumberAndCityAndZipcode(address.getStreetName(), address.getNumber(), address.getCity(), address.getZipcode());
-        if (foundAddress.isEmpty()) {
-            return repository.saveAndFlush(address);
-        }
-        return foundAddress.get();
+    public Optional<Address> findAddress(Address address) {
+        return repository.findByStreetNameAndNumberAndCityAndZipcode(address.getStreetName(), address.getNumber(), address.getCity(), address.getZipcode());
     }
 
     public Address getAddress(Long id) {

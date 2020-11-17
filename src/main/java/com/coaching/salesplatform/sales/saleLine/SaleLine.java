@@ -25,7 +25,6 @@ class SaleLine {
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "sale_id")
     @JsonIgnoreProperties("saleLines")
     private Sale sale;
 
