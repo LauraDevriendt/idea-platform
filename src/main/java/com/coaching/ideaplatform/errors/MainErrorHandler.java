@@ -1,7 +1,5 @@
-package com.coaching.salesplatform.errors;
+package com.coaching.ideaplatform.errors;
 
-import org.hibernate.TransientObjectException;
-import org.hibernate.TransientPropertyValueException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.coaching</groupId>
-	<artifactId>sales-platform</artifactId>
+	<artifactId>idea-platform</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>sales-platform</name>
+	<name>idea-platform</name>
 	<description>demo app to learn jpa</description>
 
 	<properties>

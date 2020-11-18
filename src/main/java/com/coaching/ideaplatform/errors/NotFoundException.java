@@ -1,4 +1,4 @@
-package com.coaching.salesplatform.errors;
+package com.coaching.ideaplatform.errors;
 
 public class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {

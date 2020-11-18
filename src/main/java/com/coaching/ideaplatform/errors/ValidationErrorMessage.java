@@ -1,4 +1,4 @@
-package com.coaching.salesplatform.errors;
+package com.coaching.ideaplatform.errors;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
