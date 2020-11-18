@@ -1,22 +1,29 @@
 package com.coaching.ideaplatform.Idea;
 
+import com.coaching.ideaplatform.users.User;
+import com.coaching.ideaplatform.users.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/ideas")
 public class IdeaController {
 
     private final IdeaRepository repository;
-    private final IdeaService service;
 
-    public IdeaController(IdeaRepository repository, IdeaService service) {
+    private final IdeaService service;
+    private final UserService userService;
+
+    public IdeaController(IdeaRepository repository, IdeaService service, UserService userService) {
         this.repository = repository;
         this.service = service;
+        this.userService = userService;
+
     }
 
     @GetMapping("/")
@@ -31,6 +38,8 @@ public class IdeaController {
 
     @PostMapping
     public ResponseEntity<Idea> createIdea(@Valid @RequestBody final Idea idea) {
+        List<User> users = idea.getUsers().stream().map(user -> user = userService.getUser(user.getId())).collect(Collectors.toList());
+        idea.setUsers(users);
         return new ResponseEntity<>(service.verifyAndAddIdea(idea), HttpStatus.OK);
     }
 
@@ -45,4 +54,32 @@ public class IdeaController {
         return new ResponseEntity<>("Idea with id " + id + " is deleted", HttpStatus.OK);
     }
 
+    @GetMapping("/{id}/users/")
+    public ResponseEntity<List<User>> getUsersFromIdea(@PathVariable Long id) {
+       return new ResponseEntity<>(service.getIdea(id).getUsers(), HttpStatus.OK);
+    }
+
+    /*
+    @GetMapping("/{id}/users/{userId}")
+    public ResponseEntity<User> getUserFromIdea(@PathVariable Long userId, @PathVariable Long id) {
+        return new ResponseEntity<>(service.getUserFromIdea(id,userId), HttpStatus.OK);
+    }
+
+
+    @PutMapping("/{id}/users/{userId}")
+    public ResponseEntity<User> updateUserFromIdea(@Valid @RequestBody User user, @PathVariable Long userId, @PathVariable Long id) {
+        return new ResponseEntity<>(service.updateUserFromIdea(user, id,userId), HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/users/{userId}")
+    public ResponseEntity<User> addUserFromIdea(@PathVariable Long userId, @PathVariable Long id) {
+        return new ResponseEntity<>(service.addUserToIdea(userId,id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/users/{userId}")
+    public ResponseEntity<String> deleteUserFromIdea(@PathVariable Long userId, @PathVariable Long id) {
+        service.deleteUserFromIdea(userId, id);
+        return new ResponseEntity<>("Idea with id " + id + " is deleted", HttpStatus.OK);
+    }
+*/
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -30,12 +31,14 @@ public class UserService {
     }
 
     public User updateUser(User user, Long id) {
+        attachEntities(user);
         getUser(id);
         user.setId(id);
         return repository.save(user);
     }
 
     public User verifyAndAddUser(User user) {
+        attachEntities(user);
         Optional<User> userByName = repository.findByUsername(user.getUsername());
         if (userByName.isPresent()){
             throw new NotValidException("user already exists with that name");
@@ -44,7 +47,11 @@ public class UserService {
         return  repository.saveAndFlush(user);
     }
 
+    //@todo delete werkt niet
     public void deleteUser(Long id) {
+        User user = getUser(id);
+        user.getIdeas().forEach(idea -> idea.removeUser(user));
+        ideaService.deleteIdeasWithNoUser();
         repository.deleteById(id);
     }
     public List<User> showOnlyUsersWithPublicIdeas() {
@@ -57,9 +64,20 @@ public class UserService {
         }
         return usersWithPublicIdeas;
     }
+    private void attachEntities(User user){
+        List<Idea> existingIdeas = user.getIdeas().stream()
+                .filter(idea -> idea.getId() != null )
+                .map(idea -> idea = ideaService.getIdea(idea.getId()))
+                .collect(Collectors.toList());
 
-    public List<Idea> getIdeasFromUser(Long id) {
-        User user = getUser(id);
-        return user.getIdeas();
+        List<Idea> newIdeas = user.getIdeas().stream()
+                .filter(idea -> idea.getId() == null )
+                .map(idea -> idea = ideaService.verifyAndAddIdea(idea))
+                .collect(Collectors.toList());
+
+        existingIdeas.addAll(newIdeas);
+
+        user.setIdeas(existingIdeas);
+
     }
 }

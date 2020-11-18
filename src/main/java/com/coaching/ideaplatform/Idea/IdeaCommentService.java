@@ -29,7 +29,7 @@ public class IdeaCommentService {
         return ideaService.getIdea(id);
     }
 
-    private Comment getComment(Long id){
+    public Comment getComment(Long id){
         Optional<Comment> comment = repository.findById(id);
         if(comment.isEmpty()){
             throw new NotFoundException("comments isn't found");
@@ -42,6 +42,7 @@ public class IdeaCommentService {
        if(!ideaService.getIdea(id).getComments().contains(comment)){
            throw new NotValidException("comment doens't belong to this idea");
        }
+        ideaService.getIdea(id).removeComment(comment);
         repository.deleteById(commentId);
         return ideaService.getIdea(id);
     }
@@ -51,4 +52,10 @@ public class IdeaCommentService {
         return idea.getComments();
     }
 
+    public Idea updateComment(Comment comment, Long commentId, Long id) {
+        getComment(commentId);
+        comment.setId(commentId);
+        repository.save(comment);
+        return ideaService.getIdea(id);
+    }
 }

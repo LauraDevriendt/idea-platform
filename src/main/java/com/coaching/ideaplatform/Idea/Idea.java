@@ -5,13 +5,17 @@ import com.coaching.ideaplatform.users.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Entity
 @Table(name = "ideas")
-@Data
+@Getter
+@Setter
 public
 class Idea {
 
@@ -29,19 +33,25 @@ class Idea {
     @Column(nullable = false)
     private  Boolean publicIdea;
 
-    @ManyToOne(optional = false)
+    //@todo cascade hier weg of het loopt verkeerd ...
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.PERSIST})
+    @NotEmpty
     @JsonIgnoreProperties({"ideas", "comments"})
-    private User user;
+    private List<User> users;
 
     @OneToMany(mappedBy = "idea", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonIgnoreProperties(value = {"ideas"}, allowSetters = true)
     private List<Comment> comments;
 
-    public void addComment(Comment comment) {
-        this.comments.add(comment);
+    public void removeUser(User user){
+        this.users.remove(user);
     }
 
-    public void removeComment(Long id) {
-        this.comments.remove(id);
+    public void removeComment(Comment comment){
+        this.comments.remove(comment);
+    }
+
+    public void addUser(User user) {
+        this.users.add(user);
     }
 }

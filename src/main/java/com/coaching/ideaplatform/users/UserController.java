@@ -1,12 +1,16 @@
 package com.coaching.ideaplatform.users;
 
 
+import com.coaching.ideaplatform.Idea.Idea;
+import com.coaching.ideaplatform.Idea.IdeaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/users")
@@ -14,8 +18,10 @@ public class UserController {
 
     private final UserService service;
 
+
     public UserController(UserService service) {
         this.service = service;
+
 
     }
 
@@ -44,8 +50,6 @@ public class UserController {
         service.deleteUser(id);
         return new ResponseEntity<>("User with id " + id + " is deleted", HttpStatus.OK);
     }
-
-
 
 
 }
