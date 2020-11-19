@@ -16,12 +16,10 @@ public class IdeaController {
 
     private final IdeaRepository repository;
     private final IdeaService service;
-    private final UserService userService;
 
-    public IdeaController(IdeaRepository repository, IdeaService service, UserService userService) {
+    public IdeaController(IdeaRepository repository, IdeaService service) {
         this.repository = repository;
         this.service = service;
-        this.userService = userService;
 
     }
 

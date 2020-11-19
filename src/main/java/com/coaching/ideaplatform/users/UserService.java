@@ -85,7 +85,7 @@ public class UserService {
         ideas.forEach(idea -> idea.addUser(user));
         List<Idea> existingIdeas = ideas.stream().filter(idea -> idea.getId() != null).collect(Collectors.toList());
         existingIdeas.forEach(idea -> ideaService.getIdea(idea.getId()));
-        List<Idea> newIdeas = ideas.stream().filter(idea -> idea.getId() == null).map(ideaService::verifyAndAddIdea).collect(Collectors.toList());
+        List<Idea> newIdeas = ideas.stream().filter(idea -> idea.getId() == null).map(ideaService::addIdea).collect(Collectors.toList());
         existingIdeas.addAll(newIdeas);
         user.setIdeas(existingIdeas);
         return user;

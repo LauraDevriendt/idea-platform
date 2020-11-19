@@ -77,13 +77,11 @@ public class IdeaService {
     }
 
     public void verifyIdea(Idea idea) {
-        // 3. bestaat idea al voor betreffende users
-        //SELECT ideas.id FROM ideas_users iu JOIN ideas ON iu.ideas_id = ideas.id
-        //WHERE ideas.description = "test" AND ideas.title ="public" AND iu.users_id IN (5,6);
-       // if size bigger than 0
+        List<Long> userIds = idea.getUsers().stream().map(User::getId).collect(Collectors.toList());
+        List<Idea> foundIdeas = repository.findByTitleAndDescriptionForSameUser(idea.getDescription(), idea.getTitle(), userIds);
+        if (foundIdeas.size()>0){
             throw new NotValidException("this idea already exists for one of the user you have added to the new idea");
-
-
+        }
     }
 
 
