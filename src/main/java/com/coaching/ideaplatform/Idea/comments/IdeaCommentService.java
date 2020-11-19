@@ -1,7 +1,7 @@
-package com.coaching.ideaplatform.Idea;
+package com.coaching.ideaplatform.Idea.comments;
 
-import com.coaching.ideaplatform.comments.Comment;
-import com.coaching.ideaplatform.comments.CommentRepository;
+import com.coaching.ideaplatform.Idea.Idea;
+import com.coaching.ideaplatform.Idea.IdeaService;
 import com.coaching.ideaplatform.errors.NotFoundException;
 import com.coaching.ideaplatform.errors.NotValidException;
 import org.springframework.stereotype.Service;

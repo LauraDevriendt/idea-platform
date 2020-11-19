@@ -1,6 +1,6 @@
-package com.coaching.ideaplatform.Idea;
+package com.coaching.ideaplatform.Idea.comments;
 
-import com.coaching.ideaplatform.comments.Comment;
+import com.coaching.ideaplatform.Idea.Idea;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

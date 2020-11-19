@@ -1,5 +1,6 @@
 package com.coaching.ideaplatform.Idea;
 
+import com.coaching.ideaplatform.errors.NotValidException;
 import com.coaching.ideaplatform.users.User;
 import com.coaching.ideaplatform.users.UserService;
 import org.springframework.http.HttpStatus;
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/ideas")
@@ -36,10 +36,11 @@ public class IdeaController {
     }
 
     @PostMapping
-    public ResponseEntity<Idea> createIdea(@Valid @RequestBody final Idea idea) {
-        List<User> users = idea.getUsers().stream().map(user -> user = userService.getUser(user.getId())).collect(Collectors.toList());
-        idea.setUsers(users);
-        return new ResponseEntity<>(service.verifyAndAddIdea(idea), HttpStatus.OK);
+    public ResponseEntity<Idea> createIdea(@Valid @RequestBody final IdeaDTO ideaDTO) {
+        if(ideaDTO.getUsers().stream().anyMatch(userDTO -> userDTO.getId()==null)) {
+            throw new NotValidException("you passed users that not exist yet in the database");
+        }
+        return new ResponseEntity<>(service.addIdea(ideaDTO.toEntity()), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
@@ -57,5 +58,7 @@ public class IdeaController {
     public ResponseEntity<List<User>> getUsersFromIdea(@PathVariable Long id) {
        return new ResponseEntity<>(service.getIdea(id).getUsers(), HttpStatus.OK);
     }
+
+
 
 }

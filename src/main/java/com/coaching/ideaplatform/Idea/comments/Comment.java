@@ -1,4 +1,4 @@
-package com.coaching.ideaplatform.comments;
+package com.coaching.ideaplatform.Idea.comments;
 
 import com.coaching.ideaplatform.Idea.Idea;
 import com.coaching.ideaplatform.users.User;

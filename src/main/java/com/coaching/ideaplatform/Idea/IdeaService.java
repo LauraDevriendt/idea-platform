@@ -16,12 +16,12 @@ public class IdeaService {
 
     private final IdeaRepository repository;
     private final UserRepository userRepository;
-  //  private final UserService userService;
+    //  private final UserService userService;
 
 
     public IdeaService(IdeaRepository repository, UserRepository userRepository) {
         this.repository = repository;
-       // this.userService = userService;
+        // this.userService = userService;
         this.userRepository = userRepository;
 
     }
@@ -40,12 +40,24 @@ public class IdeaService {
         return repository.save(idea);
     }
 
-
-
-    public Idea verifyAndAddIdea(Idea idea) {
+    public Idea addIdea(Idea idea) {
+        List<User> users = checkUserExistence(idea.getUsers());
+        idea.setUsers(users);
         verifyIdea(idea);
 
         return repository.saveAndFlush(idea);
+    }
+
+    private List<User> checkUserExistence(List<User> usersFromIdea) {
+        return usersFromIdea.stream()
+                .map(user -> {
+                    Optional<User> foundUser = userRepository.findById(user.getId());
+                    if (foundUser.isEmpty()) {
+                        throw new NotFoundException("user: " + user.getUsername() + " not found");
+                    }
+                    return foundUser.get();
+                })
+                .collect(Collectors.toList());
     }
 
     public List<Idea> showPublicIdeas(List<Idea> ideas) {
@@ -58,7 +70,6 @@ public class IdeaService {
         return publicIdeas;
     }
 
-
     public void deleteIdeasWithNoUser() {
         List<Idea> ideas = repository.findAll();
         List<Idea> collect = ideas.stream().filter(foundIdea -> foundIdea.getUsers().isEmpty()).collect(Collectors.toList());
@@ -66,28 +77,14 @@ public class IdeaService {
     }
 
     public void verifyIdea(Idea idea) {
-        List<Idea> ideas = repository.findByTitleOrDescription(idea.getTitle(), idea.getDescription());
-        if (idea.getUsers() == null) {
-            throw new NotValidException("this idea belongs to anyone");
-        } else {
-            List<User> passedUsers = idea.getUsers();
-            List<User> retrievedUsers = new ArrayList<>();
-
-            for (User user : passedUsers) {
-                if (userRepository.findById(user.getId()).isEmpty()) {
-                    throw new NotValidException("the user of the idea with id " + user.getId() + " doesn't exist yet, create user first");
-                } else {
-                    retrievedUsers.add(userRepository.findById(user.getId()).get());
-                }
-            }
-            idea.setUsers(retrievedUsers.stream().distinct().collect(Collectors.toList()));
-        }
-        List<Long> userIdsOfNewIdea = idea.getUsers().stream().map(User::getId).collect(Collectors.toList());
-        List<Long> userIdsOfStoredIdeas = ideas.stream().map(Idea::getUsers).flatMap(List::stream).distinct().map(User::getId).collect(Collectors.toList());
-        if (userIdsOfStoredIdeas.stream().anyMatch(userIdsOfNewIdea::contains)) {
+        // 3. bestaat idea al voor betreffende users
+        //SELECT ideas.id FROM ideas_users iu JOIN ideas ON iu.ideas_id = ideas.id
+        //WHERE ideas.description = "test" AND ideas.title ="public" AND iu.users_id IN (5,6);
+       // if size bigger than 0
             throw new NotValidException("this idea already exists for one of the user you have added to the new idea");
-        }
+
 
     }
+
 
 }

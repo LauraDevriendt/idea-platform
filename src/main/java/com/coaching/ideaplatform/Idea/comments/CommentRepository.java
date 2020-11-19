@@ -1,4 +1,4 @@
-package com.coaching.ideaplatform.comments;
+package com.coaching.ideaplatform.Idea.comments;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

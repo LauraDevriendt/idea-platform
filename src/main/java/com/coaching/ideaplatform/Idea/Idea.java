@@ -1,6 +1,6 @@
 package com.coaching.ideaplatform.Idea;
 
-import com.coaching.ideaplatform.comments.Comment;
+import com.coaching.ideaplatform.Idea.comments.Comment;
 import com.coaching.ideaplatform.users.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -53,6 +53,5 @@ class Idea {
         if(!userAlreadyInList){
             users.add(user);
         }
-
     }
 }
