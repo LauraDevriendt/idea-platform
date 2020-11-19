@@ -1,10 +1,9 @@
 package com.coaching.ideaplatform.Idea;
 
-import com.coaching.ideaplatform.comments.Comment;
 import com.coaching.ideaplatform.errors.NotFoundException;
 import com.coaching.ideaplatform.errors.NotValidException;
 import com.coaching.ideaplatform.users.User;
-import com.coaching.ideaplatform.users.UserService;
+import com.coaching.ideaplatform.users.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,15 +15,16 @@ import java.util.stream.Collectors;
 public class IdeaService {
 
     private final IdeaRepository repository;
+    private final UserRepository userRepository;
   //  private final UserService userService;
 
 
-    public IdeaService(IdeaRepository repository) {
+    public IdeaService(IdeaRepository repository, UserRepository userRepository) {
         this.repository = repository;
        // this.userService = userService;
+        this.userRepository = userRepository;
 
     }
-
 
     public Idea getIdea(Long id) {
         Optional<Idea> idea = repository.findById(id);
@@ -43,12 +43,7 @@ public class IdeaService {
 
 
     public Idea verifyAndAddIdea(Idea idea) {
-        List<Idea> ideas = repository.findByTitleOrDescription(idea.getTitle(), idea.getDescription());
-        List<Long> userIdsOfNewIdea = idea.getUsers().stream().map(User::getId).collect(Collectors.toList());
-        List<Long> userIdsOfStoredIdeas = ideas.stream().map(Idea::getUsers).flatMap(List::stream).distinct().map(User::getId).collect(Collectors.toList());
-        if (userIdsOfNewIdea.stream().anyMatch(userIdsOfStoredIdeas::contains)) {
-            throw new NotValidException("this idea already exists for one of the user you have added to the new idea");
-        }
+        verifyIdea(idea);
 
         return repository.saveAndFlush(idea);
     }
@@ -67,38 +62,32 @@ public class IdeaService {
     public void deleteIdeasWithNoUser() {
         List<Idea> ideas = repository.findAll();
         List<Idea> collect = ideas.stream().filter(foundIdea -> foundIdea.getUsers().isEmpty()).collect(Collectors.toList());
-        collect.forEach(repository::delete);
+        collect.forEach(idea -> repository.deleteById(idea.getId()));
     }
 
-    /*
-    public User getUserFromIdea(Long id, Long userId) {
-        List<Long> userIdsFromIdea = getIdea(id).getUsers().stream().map(User::getId).collect(Collectors.toList());
-        if (!userIdsFromIdea.contains(userId)) {
-            throw new NotValidException("this user doesn't belong to this idea");
+    public void verifyIdea(Idea idea) {
+        List<Idea> ideas = repository.findByTitleOrDescription(idea.getTitle(), idea.getDescription());
+        if (idea.getUsers() == null) {
+            throw new NotValidException("this idea belongs to anyone");
+        } else {
+            List<User> passedUsers = idea.getUsers();
+            List<User> retrievedUsers = new ArrayList<>();
+
+            for (User user : passedUsers) {
+                if (userRepository.findById(user.getId()).isEmpty()) {
+                    throw new NotValidException("the user of the idea with id " + user.getId() + " doesn't exist yet, create user first");
+                } else {
+                    retrievedUsers.add(userRepository.findById(user.getId()).get());
+                }
+            }
+            idea.setUsers(retrievedUsers.stream().distinct().collect(Collectors.toList()));
         }
-        return userService.getUser(id);
-    }
-
-    public User updateUserFromIdea(User user, Long id, Long userId) {
-        getUserFromIdea(id, userId);
-        return userService.updateUser(user, userId);
-    }
-
-    public void deleteUserFromIdea(Long userId, Long id) {
-        Idea idea = getIdea(id);
-        idea.removeUser(getUserFromIdea(id, userId));
-        deleteIdeasWithNoUser();
-    }
-
-    public User addUserToIdea(Long userId, Long id) {
-        Idea idea = getIdea(id);
-        if (idea.getUsers().stream().anyMatch(user -> user.getId() == userId)) {
-            throw new NotValidException("this user is already in the list of users");
+        List<Long> userIdsOfNewIdea = idea.getUsers().stream().map(User::getId).collect(Collectors.toList());
+        List<Long> userIdsOfStoredIdeas = ideas.stream().map(Idea::getUsers).flatMap(List::stream).distinct().map(User::getId).collect(Collectors.toList());
+        if (userIdsOfStoredIdeas.stream().anyMatch(userIdsOfNewIdea::contains)) {
+            throw new NotValidException("this idea already exists for one of the user you have added to the new idea");
         }
-        User userToAdd = userService.getUser(userId);
-        idea.addUser(userToAdd);
-        return userToAdd;
+
     }
-    */
 
 }

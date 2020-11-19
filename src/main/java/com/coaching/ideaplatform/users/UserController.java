@@ -1,16 +1,12 @@
 package com.coaching.ideaplatform.users;
 
 
-import com.coaching.ideaplatform.Idea.Idea;
-import com.coaching.ideaplatform.Idea.IdeaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/users")

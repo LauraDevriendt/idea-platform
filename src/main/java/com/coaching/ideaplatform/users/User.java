@@ -1,10 +1,7 @@
 package com.coaching.ideaplatform.users;
 
 import com.coaching.ideaplatform.Idea.Idea;
-import com.coaching.ideaplatform.comments.Comment;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,12 +28,7 @@ class User {
     private String username;
 
     @ManyToMany (mappedBy = "users", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JsonIgnoreProperties({"users", "comments"})
+    @JsonIgnoreProperties({"comments"})
     private List<Idea> ideas = new ArrayList<>();
-
-    public void addIdea(Idea idea) {
-        this.ideas.add(idea);
-    }
-
 
 }

@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 public class IdeaController {
 
     private final IdeaRepository repository;
-
     private final IdeaService service;
     private final UserService userService;
 
@@ -59,27 +58,4 @@ public class IdeaController {
        return new ResponseEntity<>(service.getIdea(id).getUsers(), HttpStatus.OK);
     }
 
-    /*
-    @GetMapping("/{id}/users/{userId}")
-    public ResponseEntity<User> getUserFromIdea(@PathVariable Long userId, @PathVariable Long id) {
-        return new ResponseEntity<>(service.getUserFromIdea(id,userId), HttpStatus.OK);
-    }
-
-
-    @PutMapping("/{id}/users/{userId}")
-    public ResponseEntity<User> updateUserFromIdea(@Valid @RequestBody User user, @PathVariable Long userId, @PathVariable Long id) {
-        return new ResponseEntity<>(service.updateUserFromIdea(user, id,userId), HttpStatus.OK);
-    }
-
-    @PostMapping("/{id}/users/{userId}")
-    public ResponseEntity<User> addUserFromIdea(@PathVariable Long userId, @PathVariable Long id) {
-        return new ResponseEntity<>(service.addUserToIdea(userId,id), HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{id}/users/{userId}")
-    public ResponseEntity<String> deleteUserFromIdea(@PathVariable Long userId, @PathVariable Long id) {
-        service.deleteUserFromIdea(userId, id);
-        return new ResponseEntity<>("Idea with id " + id + " is deleted", HttpStatus.OK);
-    }
-*/
 }

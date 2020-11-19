@@ -3,13 +3,11 @@ package com.coaching.ideaplatform.Idea;
 import com.coaching.ideaplatform.comments.Comment;
 import com.coaching.ideaplatform.users.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,11 +31,10 @@ class Idea {
     @Column(nullable = false)
     private  Boolean publicIdea;
 
-    //@todo cascade hier weg of het loopt verkeerd ...
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.PERSIST})
-    @NotEmpty
     @JsonIgnoreProperties({"ideas", "comments"})
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 
     @OneToMany(mappedBy = "idea", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = {"ideas"}, allowSetters = true)
@@ -52,6 +49,10 @@ class Idea {
     }
 
     public void addUser(User user) {
-        this.users.add(user);
+        boolean userAlreadyInList = users.stream().anyMatch(userInData -> userInData.getId().equals(user.getId()));
+        if(!userAlreadyInList){
+            users.add(user);
+        }
+
     }
 }

@@ -24,7 +24,7 @@ public class IdeaCommentsController {
     }
 
     @GetMapping("/{commentId}")
-    public ResponseEntity<Comment> getComment(@PathVariable Long id, @PathVariable Long commentId) {
+    public ResponseEntity<Comment> getComment(@PathVariable Long commentId) {
         return new ResponseEntity<>(service.getComment(commentId), HttpStatus.OK);
     }
 

@@ -24,7 +24,7 @@ public class MainErrorHandler {
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    ResponseEntity<ErrorMessage> NotValidExceptionHandler(HttpRequestMethodNotSupportedException e) {
+    ResponseEntity<ErrorMessage> NotValidExceptionHandler() {
         return new ResponseEntity<>(new ErrorMessage(HttpStatus.METHOD_NOT_ALLOWED.value(), "You can't use this method. This is forbidden"),HttpStatus.METHOD_NOT_ALLOWED);
     }
 
