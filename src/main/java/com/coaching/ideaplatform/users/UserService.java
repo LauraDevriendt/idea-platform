@@ -40,7 +40,7 @@ public class UserService {
     }
 
     @Transactional
-    public User verifyAndAddUser(User user) {
+    public User addUser(User user) {
       verifyUser(user);
         User userReadyForSave = attachIdeas(user);
         return repository.saveAndFlush(userReadyForSave);
@@ -65,17 +65,10 @@ public class UserService {
     }
 
     public List<User> showOnlyUsersWithPublicIdeas() {
-        List<User> users = repository.findAll();
-        List<User> usersWithPublicIdeas = new ArrayList<>();
-        for (User user : users) {
-            List<Idea> publicIdeas = ideaService.showPublicIdeas(user.getIdeas());
-            user.setIdeas(publicIdeas);
-            usersWithPublicIdeas.add(user);
-        }
-        return usersWithPublicIdeas;
+      return repository.findByUsersWithPublicIdeas();
     }
 
-    // @todo hoe transactioneel maken?
+    // @todo hoe refactoren? opsplitsen in kleinere functies
     public User attachIdeas(User user) {
         List<Idea> ideas = user.getIdeas();
         user.setIdeas(new ArrayList<>());
@@ -83,11 +76,15 @@ public class UserService {
             repository.saveAndFlush(user);
         }
         ideas.forEach(idea -> idea.addUser(user));
+
         List<Idea> existingIdeas = ideas.stream().filter(idea -> idea.getId() != null).collect(Collectors.toList());
         existingIdeas.forEach(idea -> ideaService.getIdea(idea.getId()));
+
         List<Idea> newIdeas = ideas.stream().filter(idea -> idea.getId() == null).map(ideaService::addIdea).collect(Collectors.toList());
         existingIdeas.addAll(newIdeas);
+
         user.setIdeas(existingIdeas);
+
         return user;
     }
 }

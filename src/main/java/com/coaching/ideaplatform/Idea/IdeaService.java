@@ -6,7 +6,6 @@ import com.coaching.ideaplatform.users.User;
 import com.coaching.ideaplatform.users.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,12 +15,9 @@ public class IdeaService {
 
     private final IdeaRepository repository;
     private final UserRepository userRepository;
-    //  private final UserService userService;
-
 
     public IdeaService(IdeaRepository repository, UserRepository userRepository) {
         this.repository = repository;
-        // this.userService = userService;
         this.userRepository = userRepository;
 
     }
@@ -37,6 +33,7 @@ public class IdeaService {
     public Idea updateIdea(Idea idea, Long id) {
         getIdea(id);
         idea.setId(id);
+        verifyIdea(idea);
         return repository.save(idea);
     }
 
@@ -53,22 +50,13 @@ public class IdeaService {
                 .map(user -> {
                     Optional<User> foundUser = userRepository.findById(user.getId());
                     if (foundUser.isEmpty()) {
-                        throw new NotFoundException("user: " + user.getUsername() + " not found");
+                        throw new NotFoundException("user: " + user.getId() +":"+ user.getUsername() + " not found");
                     }
                     return foundUser.get();
                 })
                 .collect(Collectors.toList());
     }
 
-    public List<Idea> showPublicIdeas(List<Idea> ideas) {
-        List<Idea> publicIdeas = new ArrayList<>();
-        for (Idea idea : ideas) {
-            if (idea.getPublicIdea()) {
-                publicIdeas.add(idea);
-            }
-        }
-        return publicIdeas;
-    }
 
     public void deleteIdeasWithNoUser() {
         List<Idea> ideas = repository.findAll();
@@ -80,9 +68,7 @@ public class IdeaService {
         List<Long> userIds = idea.getUsers().stream().map(User::getId).collect(Collectors.toList());
         List<Idea> foundIdeas = repository.findByTitleAndDescriptionForSameUser(idea.getDescription(), idea.getTitle(), userIds);
         if (foundIdeas.size()>0){
-            throw new NotValidException("this idea already exists for one of the user you have added to the new idea");
+            throw new NotValidException("this idea already exists for one of the users");
         }
     }
-
-
 }

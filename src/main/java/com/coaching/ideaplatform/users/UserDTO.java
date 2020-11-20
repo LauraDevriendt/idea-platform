@@ -2,6 +2,7 @@ package com.coaching.ideaplatform.users;
 
 import com.coaching.ideaplatform.Idea.Idea;
 import com.coaching.ideaplatform.Idea.IdeaDTO;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ public class UserDTO {
 
     private String username;
 
+    @JsonIgnoreProperties({"users","comments"})
     private List<IdeaDTO> ideas = new ArrayList<>();
 
     public User toEntity(){

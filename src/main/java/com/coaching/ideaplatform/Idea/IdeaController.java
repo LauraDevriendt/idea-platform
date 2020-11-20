@@ -1,14 +1,13 @@
 package com.coaching.ideaplatform.Idea;
 
 import com.coaching.ideaplatform.errors.NotValidException;
-import com.coaching.ideaplatform.users.User;
-import com.coaching.ideaplatform.users.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/ideas")
@@ -24,26 +23,29 @@ public class IdeaController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Idea>> getIdeas() {
-        return new ResponseEntity<>(service.showPublicIdeas(repository.findAll()), HttpStatus.OK);
+    public ResponseEntity<List<IdeaDTO>> getIdeas() {
+        List<IdeaDTO> ideaDTOS = repository.findPublicIdeas().stream()
+                .map(Idea::toDto)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>((ideaDTOS), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Idea> getIdea(@PathVariable Long id) {
-        return new ResponseEntity<>(service.getIdea(id), HttpStatus.OK);
+    public ResponseEntity<IdeaDTO> getIdea(@PathVariable Long id) {
+        return new ResponseEntity<>(service.getIdea(id).toDto(), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Idea> createIdea(@Valid @RequestBody final IdeaDTO ideaDTO) {
+    public ResponseEntity<IdeaDTO> createIdea(@Valid @RequestBody final IdeaDTO ideaDTO) {
         if(ideaDTO.getUsers().stream().anyMatch(userDTO -> userDTO.getId()==null)) {
             throw new NotValidException("you passed users that not exist yet in the database");
         }
-        return new ResponseEntity<>(service.addIdea(ideaDTO.toEntity()), HttpStatus.OK);
+        return new ResponseEntity<>(service.addIdea(ideaDTO.toEntity()).toDto(), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Idea> updateIdea(@RequestBody Idea idea, @PathVariable Long id) {
-        return new ResponseEntity<>(service.updateIdea(idea, id), HttpStatus.OK);
+    public ResponseEntity<IdeaDTO> updateIdea(@RequestBody IdeaDTO idea, @PathVariable Long id) {
+        return new ResponseEntity<>(service.updateIdea(idea.toEntity(), id).toDto(), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -51,12 +53,4 @@ public class IdeaController {
         repository.deleteById(id);
         return new ResponseEntity<>("Idea with id " + id + " is deleted", HttpStatus.OK);
     }
-
-    @GetMapping("/{id}/users/")
-    public ResponseEntity<List<User>> getUsersFromIdea(@PathVariable Long id) {
-       return new ResponseEntity<>(service.getIdea(id).getUsers(), HttpStatus.OK);
-    }
-
-
-
 }

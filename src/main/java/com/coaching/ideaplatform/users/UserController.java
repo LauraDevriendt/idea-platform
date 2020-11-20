@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/users")
@@ -17,28 +18,29 @@ public class UserController {
 
     public UserController(UserService service) {
         this.service = service;
-
-
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<User>> getUsers() {
-        return new ResponseEntity<>(service.showOnlyUsersWithPublicIdeas(), HttpStatus.OK);
+    public ResponseEntity<List<UserDTO>> getUsers() {
+        List<UserDTO> userDTOS = service.showOnlyUsersWithPublicIdeas().stream()
+                .map(User::toDto)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(userDTOS, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        return new ResponseEntity<>(service.getUser(id), HttpStatus.OK);
+    public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
+        return new ResponseEntity<>(service.getUser(id).toDto(), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody final User user) {
-        return new ResponseEntity<>(service.verifyAndAddUser(user), HttpStatus.OK);
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody final UserDTO user) {
+        return new ResponseEntity<>(service.addUser(user.toEntity()).toDto(), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@RequestBody User user, @PathVariable Long id) {
-        return new ResponseEntity<>(service.updateUser(user, id), HttpStatus.OK);
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO user, @PathVariable Long id) {
+        return new ResponseEntity<>(service.updateUser(user.toEntity(), id).toDto(), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -46,6 +48,4 @@ public class UserController {
         service.deleteUser(id);
         return new ResponseEntity<>("User with id " + id + " is deleted", HttpStatus.OK);
     }
-
-
 }
