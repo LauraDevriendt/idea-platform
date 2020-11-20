@@ -25,14 +25,14 @@ public class IdeaController {
     @GetMapping("/")
     public ResponseEntity<List<IdeaDTO>> getIdeas() {
         List<IdeaDTO> ideaDTOS = repository.findPublicIdeas().stream()
-                .map(Idea::toDto)
+                .map(IdeaDTO::toDto)
                 .collect(Collectors.toList());
         return new ResponseEntity<>((ideaDTOS), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<IdeaDTO> getIdea(@PathVariable Long id) {
-        return new ResponseEntity<>(service.getIdea(id).toDto(), HttpStatus.OK);
+        return new ResponseEntity<>(IdeaDTO.toChildDto(service.getIdea(id)), HttpStatus.OK);
     }
 
     @PostMapping
@@ -40,12 +40,12 @@ public class IdeaController {
         if(ideaDTO.getUsers().stream().anyMatch(userDTO -> userDTO.getId()==null)) {
             throw new NotValidException("you passed users that not exist yet in the database");
         }
-        return new ResponseEntity<>(service.addIdea(ideaDTO.toEntity()).toDto(), HttpStatus.OK);
+        return new ResponseEntity<>(IdeaDTO.toChildDto(service.addIdea(ideaDTO.toEntity())), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<IdeaDTO> updateIdea(@RequestBody IdeaDTO idea, @PathVariable Long id) {
-        return new ResponseEntity<>(service.updateIdea(idea.toEntity(), id).toDto(), HttpStatus.OK);
+        return new ResponseEntity<>(IdeaDTO.toChildDto(service.updateIdea(idea.toEntity(), id)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

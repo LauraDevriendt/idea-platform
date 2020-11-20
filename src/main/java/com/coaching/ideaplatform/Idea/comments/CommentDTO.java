@@ -25,4 +25,13 @@ public class CommentDTO {
         comment.setIdea(this.getIdea().toEntity());
         return comment;
     }
+
+    public static CommentDTO toDto(Comment comment){
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setComment(comment.getComment());
+        commentDTO.setId(comment.getId());
+        commentDTO.setIdea(IdeaDTO.toChildDto(comment.getIdea()));
+        commentDTO.setUser(UserDTO.toChildDto(comment.getUser()));
+        return commentDTO;
+    }
 }

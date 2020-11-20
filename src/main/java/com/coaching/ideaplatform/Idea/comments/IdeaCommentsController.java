@@ -3,6 +3,7 @@ package com.coaching.ideaplatform.Idea.comments;
 import com.coaching.ideaplatform.Idea.Idea;
 import com.coaching.ideaplatform.Idea.IdeaDTO;
 import com.coaching.ideaplatform.Idea.IdeaService;
+import com.coaching.ideaplatform.users.UserDTO;
 import com.coaching.ideaplatform.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,30 +31,31 @@ public class IdeaCommentsController {
     @GetMapping("/")
     public ResponseEntity<List<CommentDTO>> getComments(@PathVariable Long id) {
         List<CommentDTO> comments = service.getComments(id).stream()
-                .map(Comment::toDto)
+                .map(CommentDTO::toDto)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
     @GetMapping("/{commentId}")
     public ResponseEntity<CommentDTO> getComment(@PathVariable Long commentId) {
-               return new ResponseEntity<>( service.getComment(commentId).toDto(), HttpStatus.OK);
+               return new ResponseEntity<>( CommentDTO.toDto(service.getComment(commentId)), HttpStatus.OK);
     }
 
     @PostMapping("/")
     //  @todo je converteert de relaties naar childDto's maar je wil niet dat ze de ideas zien van bv user want is nu leeg doordat niet geconverteerd
     public ResponseEntity<IdeaDTO> addComment(@Valid @RequestBody CommentDTO comment, @PathVariable Long id) {
-        comment.setIdea(ideaService.getIdea(id).toDto());
+       ;
+        comment.setIdea(IdeaDTO.toDto(ideaService.getIdea(id)));
         Long userId = comment.getUser().getId();
-        comment.setUser(userService.getUser(userId).toDto());
+        comment.setUser(UserDTO.toChildDto(userService.getUser(userId)));
         Comment comment1 = comment.toEntity();
-        return new ResponseEntity<>(service.addComment(comment1, id).toDto(), HttpStatus.OK);
+        return new ResponseEntity<>(IdeaDTO.toDto(service.addComment(comment1, id)), HttpStatus.OK);
     }
 
 
     @PutMapping("{commentId}")
     public ResponseEntity<IdeaDTO> updateComment(@Valid @RequestBody CommentDTO comment, @PathVariable Long id, @PathVariable Long commentId) {
-        IdeaDTO ideaDTO = service.updateComment(comment.toEntity(), commentId, id).toDto();
+        IdeaDTO ideaDTO = IdeaDTO.toChildDto(service.updateComment(comment.toEntity(), commentId, id));
         return new ResponseEntity<>(ideaDTO, HttpStatus.OK);
     }
 

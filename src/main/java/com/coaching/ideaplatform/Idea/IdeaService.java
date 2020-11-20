@@ -57,7 +57,6 @@ public class IdeaService {
                 .collect(Collectors.toList());
     }
 
-
     public void deleteIdeasWithNoUser() {
         List<Idea> ideas = repository.findAll();
         List<Idea> collect = ideas.stream().filter(foundIdea -> foundIdea.getUsers().isEmpty()).collect(Collectors.toList());

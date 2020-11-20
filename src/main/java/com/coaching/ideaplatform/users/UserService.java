@@ -31,25 +31,30 @@ public class UserService {
         return user.get();
     }
 
-    public User updateUser(User user, Long id) {
-        getUser(id);
-        user.setId(id);
+    public User updateUser(User user) {
+        getUser(user.getId());
         verifyUser(user);
-        attachIdeas(user);
+        List<Idea> ideas = user.getIdeas();
+        ideas.forEach(idea -> idea.addUser(user));
+        attachIdeas(ideas);
         return repository.save(user);
     }
 
     @Transactional
     public User addUser(User user) {
-      verifyUser(user);
-        User userReadyForSave = attachIdeas(user);
-        return repository.saveAndFlush(userReadyForSave);
+        verifyUser(user);
+        List<Idea> ideas = user.getIdeas();
+        user.setIdeas(new ArrayList<>());
+        User managedUser = repository.save(user);
+        ideas.forEach(idea -> idea.addUser(managedUser));
+        managedUser.setIdeas(attachIdeas(ideas));
+        return repository.save(managedUser);
     }
 
-    private void verifyUser(User user){
+    private void verifyUser(User user) {
         Optional<User> userByName = repository.findByUsername(user.getUsername());
-        if (userByName.isPresent()){
-            if(user.getId()!= userByName.get().getId()) {
+        if (userByName.isPresent()) {
+            if (user.getId() != userByName.get().getId()) {
                 throw new NotValidException("user already exists with that name");
             }
         }
@@ -65,26 +70,22 @@ public class UserService {
     }
 
     public List<User> showOnlyUsersWithPublicIdeas() {
-      return repository.findByUsersWithPublicIdeas();
+        return repository.findByUsersWithPublicIdeas();
     }
 
     // @todo hoe refactoren? opsplitsen in kleinere functies
-    public User attachIdeas(User user) {
-        List<Idea> ideas = user.getIdeas();
-        user.setIdeas(new ArrayList<>());
-        if(user.getId() ==null || repository.findById(user.getId()).isEmpty()){
-            repository.saveAndFlush(user);
-        }
-        ideas.forEach(idea -> idea.addUser(user));
 
-        List<Idea> existingIdeas = ideas.stream().filter(idea -> idea.getId() != null).collect(Collectors.toList());
+    public List<Idea> attachIdeas(List<Idea> ideas) {
+        List<Idea> existingIdeas = ideas.stream()
+                .filter(idea -> idea.getId() != null)
+                .collect(Collectors.toList());
         existingIdeas.forEach(idea -> ideaService.getIdea(idea.getId()));
 
-        List<Idea> newIdeas = ideas.stream().filter(idea -> idea.getId() == null).map(ideaService::addIdea).collect(Collectors.toList());
+        List<Idea> newIdeas = ideas.stream().filter(idea -> idea.getId() == null)
+                .map(ideaService::addIdea)
+                .collect(Collectors.toList());
         existingIdeas.addAll(newIdeas);
 
-        user.setIdeas(existingIdeas);
-
-        return user;
+       return ideas;
     }
 }

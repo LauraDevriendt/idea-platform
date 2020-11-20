@@ -23,24 +23,26 @@ public class UserController {
     @GetMapping("/")
     public ResponseEntity<List<UserDTO>> getUsers() {
         List<UserDTO> userDTOS = service.showOnlyUsersWithPublicIdeas().stream()
-                .map(User::toDto)
+                .map(UserDTO::toDto)
                 .collect(Collectors.toList());
         return new ResponseEntity<>(userDTOS, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
-        return new ResponseEntity<>(service.getUser(id).toDto(), HttpStatus.OK);
+        return new ResponseEntity<>(UserDTO.toChildDto(service.getUser(id)), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody final UserDTO user) {
-        return new ResponseEntity<>(service.addUser(user.toEntity()).toDto(), HttpStatus.OK);
+        return new ResponseEntity<>(UserDTO.toChildDto(service.addUser(user.toEntity())), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO user, @PathVariable Long id) {
-        return new ResponseEntity<>(service.updateUser(user.toEntity(), id).toDto(), HttpStatus.OK);
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDto, @PathVariable Long id) {
+        User user = userDto.toEntity();
+        user.setId(id);
+        return new ResponseEntity<>(UserDTO.toChildDto(service.updateUser(user)), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

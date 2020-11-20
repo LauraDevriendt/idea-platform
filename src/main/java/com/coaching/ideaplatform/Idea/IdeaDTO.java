@@ -59,4 +59,27 @@ public class IdeaDTO {
 
         return idea;
     }
+
+
+    public static IdeaDTO toDto(Idea idea){
+        IdeaDTO ideaDTO = new IdeaDTO();
+        ideaDTO.setId(idea.getId());
+        ideaDTO.setTitle(idea.getTitle());
+        ideaDTO.setDescription(idea.getDescription());
+        ideaDTO.setPublicIdea(idea.getPublicIdea());
+        List<UserDTO> users = idea.getUsers().stream().map(UserDTO::toChildDto).collect(Collectors.toList());
+        ideaDTO.setUsers(users);
+        List<CommentDTO> comments = idea.getComments().stream().map(CommentDTO::toDto).collect(Collectors.toList());
+        ideaDTO.setComments(comments);
+        return ideaDTO;
+    }
+
+    public static IdeaDTO toChildDto(Idea idea){
+        IdeaDTO ideaDTO = new IdeaDTO();
+        ideaDTO.setId(idea.getId());
+        ideaDTO.setTitle(idea.getTitle());
+        ideaDTO.setDescription(idea.getDescription());
+        ideaDTO.setPublicIdea(idea.getPublicIdea());
+        return ideaDTO;
+    }
 }

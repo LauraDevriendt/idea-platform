@@ -33,19 +33,5 @@ class User {
     @JsonIgnoreProperties({"comments"})
     private List<Idea> ideas = new ArrayList<>();
 
-    public UserDTO toDto(){
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(this.getId());
-        userDTO.setUsername(this.getUsername());
-        List<IdeaDTO> ideas = this.getIdeas().stream().map(Idea::toChildDto).collect(Collectors.toList());
-        userDTO.setIdeas(ideas);
-        return userDTO;
-    }
 
-    public UserDTO toChildDto() {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(this.getId());
-        userDTO.setUsername(this.getUsername());
-        return userDTO;
-    }
 }

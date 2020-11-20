@@ -32,12 +32,4 @@ class Comment {
     @JsonIgnoreProperties({"comments"})
     private Idea idea;
 
-    public CommentDTO toDto(){
-       CommentDTO commentDTO = new CommentDTO();
-       commentDTO.setComment(this.getComment());
-       commentDTO.setId(this.getId());
-       commentDTO.setIdea(this.getIdea().toChildDto());
-       commentDTO.setUser(this.getUser().toChildDto());
-       return commentDTO;
-    }
 }

@@ -62,25 +62,4 @@ class Idea {
         }
     }
 
-    public IdeaDTO toDto(){
-        IdeaDTO ideaDTO = new IdeaDTO();
-        ideaDTO.setId(this.getId());
-        ideaDTO.setTitle(this.getTitle());
-        ideaDTO.setDescription(this.getDescription());
-        ideaDTO.setPublicIdea(this.getPublicIdea());
-        List<UserDTO> users = this.getUsers().stream().map(User::toChildDto).collect(Collectors.toList());
-        ideaDTO.setUsers(users);
-        List<CommentDTO> comments = this.getComments().stream().map(Comment::toDto).collect(Collectors.toList());
-        ideaDTO.setComments(comments);
-        return ideaDTO;
-    }
-
-    public IdeaDTO toChildDto(){
-        IdeaDTO ideaDTO = new IdeaDTO();
-        ideaDTO.setId(this.getId());
-        ideaDTO.setTitle(this.getTitle());
-        ideaDTO.setDescription(this.getDescription());
-        ideaDTO.setPublicIdea(this.getPublicIdea());
-        return ideaDTO;
-    }
 }
